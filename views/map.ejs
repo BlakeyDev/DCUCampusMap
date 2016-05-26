@@ -1,5 +1,3 @@
-
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,9 +5,10 @@
     <link href='http://fonts.googleapis.com/css?family=Milonga' rel='stylesheet' type='text/css'>
 
     <title><%= title%></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+
     <link href='http://fonts.googleapis.com/css?family=Milonga' rel='stylesheet' type='text/css'>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	<style type="text/css">
+
         body {
             padding: 0;
             margin: 0;
@@ -22,9 +21,6 @@
             margin-left: 13px;
             margin-top: 70px;
         }
-
-
-
         #map { z-index: 1;}
         #title { z-index: 2; position: absolute; left: 10px; }
     </style>
@@ -35,39 +31,45 @@
     <h1><%= title%></h1>
     <div id="map"></div>
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
-
     <script>
-        var map = L.map('map').setView([42.35, -71.06], 12);
-        var markerLayerGroup = L.layerGroup().addTo(map);
-        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            maxZoom: 18,
-            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
-        }).addTo(map);
+    var latlon = [53.3853822,-6.2595673];
 
-        function getPins(e){
-            bounds = map.getBounds();
-            url = "ws/parks/within?lat1=" + bounds.getNorthEast().lat + "&lon1=" + bounds.getNorthEast().lng + "&lat2=" + bounds.getSouthWest().lat + "&lon2=" + bounds.getSouthWest().lng;
-            $.get(url, pinTheMap, "json")
-        }
-        function pinTheMap(data){
-            //clear the current pins
-            map.removeLayer(markerLayerGroup);
+    // add the map and set the initial center to DCU
+    var map = L.map('map').setView(latlon, 17);
+    // attribution to give credit to OSM map data and VBB for public transportation
+    var attribution ="<a href='https://www.mapbox.com/about/maps/' target='_blank'>© Mapbox © OpenStreetMap</a> | ÖPNV Daten © <a href='http://www.vbb.de/de/index.html' target='_blank'>VBB</a> | Routing Service <a href='http://www.route360.net/de/' target='_blank'>Route360°</a>";
 
-            //add the new pins
-            var markerArray = new Array(data.length)
-            for (var i = 0; i < data.length; i++){
-                park = data[i];
-                markerArray[i] = L.marker([park.pos[1], park.pos[0]]).bindPopup(park.Name);
-            }
+    // initialising the base map to openstreetmap as the layer is more detailed on Glasnevin Campus
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 18, attribution: attribution }).addTo(map);
 
-            markerLayerGroup = L.layerGroup(markerArray).addTo(map);
-        }
-        map.on('dragend', getPins);
-        map.on('zoomend', getPins);
-        map.whenReady(getPins)
+    // set the service key to use API
+    // please contact us and request your own key
+    r360.config.serviceKey = '4AKJ5CXGKZONPYG6AFNP';
+    r360.config.serviceUrl = 'https://service.route360.net/britishisles/';
 
+    // create a marker and add it to the map
+    var marker = L.marker(latlon).addTo(map);
+
+    // create the layer to add the polygons
+    var polygonLayer = r360.leafletPolygonLayer().addTo(map);
+
+    // you need to define some options for the polygon service
+    // for more travel options check out the other tutorials
+    var travelOptions = r360.travelOptions();
+    // we only have one source which is the marker we just added
+    travelOptions.addSource(marker);
+    // we want to have polygons for 5 to 30 minutes
+    travelOptions.setTravelTimes([300, 600, 900, 1200]);
+    // go by foot
+    travelOptions.setTravelType('walk');
+
+    // call the service
+    r360.PolygonService.getTravelTimePolygons(travelOptions, function(polygons){
+
+    // add the returned polygons to the polygon layer
+    // and zoom the map to fit the polygons perfectly
+    polygonLayer.clearAndAddLayers(polygons, false);
+    });
     </script>
-
-
 </body>
 </html>

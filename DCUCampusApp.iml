@@ -6,5 +6,10 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="DCUCampusApp node_modules" level="project" />
     <orderEntry type="library" name="leaflet" level="application" />
+    <orderEntry type="library" name="r360-leaflet-src" level="application" />
+    <orderEntry type="library" name="underscore" level="application" />
+    <orderEntry type="library" name="jquery-ui" level="application" />
+    <orderEntry type="library" name="jquery" level="application" />
+    <orderEntry type="library" name="r360-core-src" level="application" />
   </component>
 </module>

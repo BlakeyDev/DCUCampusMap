@@ -4,7 +4,7 @@ var router = express.Router();
 
 /* GET about page. */
 router.get('/', function(req, res, next) {
-    res.render('map', { title: 'DCU Campus Overview' });
+    res.render('multi', { title: 'Multi-Campus Overview' });
 });
 
 

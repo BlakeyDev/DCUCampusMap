@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link href='http://fonts.googleapis.com/css?family=Milonga' rel='stylesheet' type='text/css'>
+
+    <title><%= title%></title>
+
+    <link href='http://fonts.googleapis.com/css?family=Milonga' rel='stylesheet' type='text/css'>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />	<style type="text/css">
+
+        body {
+            padding: 0;
+            margin: 0;
+        }
+        html, body, #map {
+            height: 100%;
+            font-family: 'Milonga', cursive;
+        }
+        .leaflet-container .leaflet-control-zoom {
+            margin-left: 13px;
+            margin-top: 70px;
+        }
+        #map { z-index: 1;}
+        #title { z-index: 2; position: absolute; left: 10px; }
+    </style>
+
+</head>
+<body>
+<% include templates/header.ejs%>
+<h1><%= title%></h1>
+<div id="map"></div>
+<!--<script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>-->
+<script>
+    var map = L.map('map').setView([53.3853822,-6.2595673], 15);
+    var glasnevinCampus = L.marker([53.3853822,-6.2595673]).addTo(map).bindPopup("DCU Glasnevin Campus");
+
+    var markerLayerGroup = L.layerGroup().addTo(map);
+    L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 20,
+        attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>'
+    }).addTo(map);
+
+
+    //Handy shortcut for zooming the map view to the detected location
+    map.locate({setView:true, maxZoom:18});
+
+    //Set geolocation of user
+    function onLocationFound(e){
+        var radius = e.accuracy/2;
+        L.marker(e.latlng).addTo(map).bindPopup("You are within " + radius + "meters from this point").openPopup();
+        L.circle(e.latlng, radius).addTo(map);
+    }
+    map.on('locationfound', onLocationFound);
+
+
+    var sportsCampus = L.marker([53.3810819,-6.2716587]).addTo(map).bindPopup("DCU Sports Campus");
+
+    var materDei = L.marker([53.3632481,-6.2554021]).addTo(map).bindPopup("Mater Dei Campus");
+
+    var patsCampus = L.marker([53.3706972,-6.2581833]).addTo(map).bindPopup("St.Pat's Campus");
+
+    var innovCampus = L.marker([53.3764867,-6.2712778]).addTo(map).bindPopup("DCU Innovation Campus");
+
+    var allHallows = L.marker([53.370678,-6.2506838]).addTo(map).bindPopup("All Hallows Campus");
+
+</script>
+
+
+
+</body>
+</html>
